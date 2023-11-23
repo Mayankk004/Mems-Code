@@ -115,7 +115,9 @@ t=1;
 }
 head = new;
     
-    
+if(v==4096){
+v=0;
+}
     
 next_mems_virtual_address = (void*)((char*)next_mems_virtual_address + total_size);
 next_mems_physical_address = (void*)((char*)next_mems_virtual_address + total_size);
@@ -161,11 +163,11 @@ printf("MAIN[%lu:%lu]-> ", (unsigned long)subchain_start->virtual_address, (unsi
 c = subchain_start;
 while (c && c->page == subchain_start->page) {
 if (c->is_hole) {
-if(c->next->is_hole){
+if(c->next && c->next->is_hole){
 c=c->prev;
 continue;
 }
-if(c->prev->is_hole) {
+if(c->prev && c->prev->is_hole) {
 c->size+=c->prev->size;
 }
 printf("H");
@@ -221,6 +223,10 @@ printf("]\n\n");
 
 void* mems_get(void* v_ptr) {
 Node* c = head;
+if(c->is_hole==1){
+printf("\nError as memory does not exist\n");
+exit(0);
+}
 while (c) {
 void* start = (void*)((char*)c->virtual_address);
 void* end = (void*)((char*)start + c->size);
